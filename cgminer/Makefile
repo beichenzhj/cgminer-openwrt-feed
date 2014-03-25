@@ -14,8 +14,8 @@ ifeq ($(CONFIG_CGMINER_AVALON2),y)
 PKG_VERSION:=4.0.0
 PKG_REV:=2f454d8616fbc5c371849062aaf24c2bee51d831
 else
-PKG_VERSION:=3.9.0
-PKG_REV:=2d36f88e7ad1daf2cc81de8fb32181526dbe932a
+PKG_VERSION:=4.2.0
+PKG_REV:=e8da9dbe5d0bb70338a927147d416d1985d325d1
 endif
 
 PKG_RELEASE:=1
@@ -32,14 +32,14 @@ PKG_FIXUP:=autoreconf
 include $(INCLUDE_DIR)/package.mk
 
 define Package/cgminer
-	SECTION:=utils
-	CATEGORY:=Utilities
-	TITLE:=cgminer
-	URL:=https://github.com/ckolivas/cgminer
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=cgminer
+  URL:=https://github.com/ckolivas/cgminer
 ifeq ($(CONFIG_TARGET_brcm2708_RaspberryPi),y)
-	DEPENDS:=+libcurl +libpthread +jansson +udev +libncurses
+  DEPENDS:=+libcurl +libpthread +jansson +udev +libncurses
 else
-	DEPENDS:=+libcurl +libpthread +jansson +udev
+  DEPENDS:=+libcurl +libpthread +jansson +udev
 endif
 endef
 
@@ -50,13 +50,13 @@ coins. Do not use on multiple block chains at the same time!
 endef
 
 define Package/cgminer/config
-	menu "Configuration"
-	depends on PACKAGE_cgminer
-	source "$(SOURCE)/Config.in"
-	endmenu
+  menu "Configuration"
+  depends on PACKAGE_cgminer
+  source "$(SOURCE)/Config.in"
+  endmenu
 endef
 
-CONFIGURE_ARGS += --disable-opencl --disable-adl
+CONFIGURE_ARGS += --disable-adl
 TARGET_LDFLAGS += -Wl,-rpath-link=$(STAGING_DIR)/usr/lib
 
 ifeq ($(CONFIG_CGMINER_AVALON2),)
@@ -75,27 +75,26 @@ endef
 endif
 
 define Build/Compile
-	$(call Build/Compile/Default)
-	(cd $(PKG_BUILD_DIR) && \
-	  $(TARGET_CC) -Icompat/jansson -Icompat/libusb-1.0/libusb \
-	  api-example.c -o cgminer-api;)
+  $(call Build/Compile/Default)
+  (cd $(PKG_BUILD_DIR) && \
+    $(TARGET_CC) -Icompat/jansson -Icompat/libusb-1.0/libusb \
+    api-example.c -o cgminer-api;)
 endef
 
 define Package/cgminer/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_DIR) $(1)/etc/config
+  $(INSTALL_DIR) $(1)/usr/bin
+  $(INSTALL_DIR) $(1)/etc/init.d
+  $(INSTALL_DIR) $(1)/etc/config
 
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/cgminer-api	   $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/cgminer  $(1)/usr/bin
-	$(INSTALL_BIN) $(FILES_DIR)/cgminer-monitor        $(1)/usr/bin
-
+  $(INSTALL_BIN) $(PKG_BUILD_DIR)/cgminer-api	   $(1)/usr/bin
+  $(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/cgminer  $(1)/usr/bin
+  $(INSTALL_BIN) $(FILES_DIR)/cgminer-monitor        $(1)/usr/bin
 ifeq ($(CONFIG_CGMINER_AVALON2),)
-	$(INSTALL_BIN) $(FILES_DIR)/cgminer.init           $(1)/etc/init.d/cgminer
-	$(CP)          $(FILES_DIR)/cgminer.config         $(1)/etc/config/cgminer
+  $(INSTALL_BIN) $(FILES_DIR)/cgminer.init           $(1)/etc/init.d/cgminer
+  $(CP)          $(FILES_DIR)/cgminer.config         $(1)/etc/config/cgminer
 else
-	$(INSTALL_BIN) $(FILES_DIR)/cgminer.avalon2.init   $(1)/etc/init.d/cgminer
-	$(CP)          $(FILES_DIR)/cgminer.avalon2.config $(1)/etc/config/cgminer
+  $(INSTALL_BIN) $(FILES_DIR)/cgminer.avalon2.init   $(1)/etc/init.d/cgminer
+  $(CP)          $(FILES_DIR)/cgminer.avalon2.config $(1)/etc/config/cgminer
 endif
 endef
 
