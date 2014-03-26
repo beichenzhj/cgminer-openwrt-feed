@@ -1,7 +1,14 @@
-
 To use this:
 
 	git clone git://git.openwrt.org/openwrt.git
 	cd openwrt
 	echo 'src-git cgminer http://github.com/jmesmon/cgminer-openwrt-feed.git' > feeds.conf
 	cat feeds.conf.default >> feeds.conf
+	./scripts/feeds install cgminer
+	make menuconfig
+	# select cgminer under Utilities->cgminer, change any other config for your device.
+	make
+	# flash the image under bin/
+	
+TODO:
+	- how can I use this to generate packages for opkg?
